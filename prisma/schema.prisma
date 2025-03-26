@@ -1,0 +1,100 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Enums for consistent values
+enum Status {
+  active
+  inactive
+  under_maintenance
+}
+
+enum VehicleType {
+  truck
+  trailer
+  car
+  machinery
+}
+
+enum MovementType {
+  entry
+  exit
+}
+
+enum EntryReason {
+  load
+  unload
+  storage
+  other
+}
+
+enum AuditEventType {
+  entry
+  exit
+  update
+  deletion
+}
+
+// Main models
+model Yard {
+  id           Int      @id @default(autoincrement())
+  name         String   @db.VarChar(100)
+  location     String   @db.VarChar(200)
+  maxCapacity  Int
+  status       Status
+  supervisor   User     @relation(fields: [supervisorId], references: [id])
+  supervisorId Int
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([location])
+  @@index([status])
+  @@map("yards")
+}
+
+model Driver {
+  id               Int       @id @default(autoincrement())
+  name             String    @db.VarChar(100)
+  licenseNumber    String?   @unique @db.VarChar(50)
+  phone            String?   @db.VarChar(20)
+  transportCompany String?   @db.VarChar(100)
+  licenseExpiry    DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  @@index([licenseNumber])
+  @@map("drivers")
+}
+
+model User {
+  id              Int      @id @default(autoincrement())
+  firstName       String   @db.VarChar(100)
+  lastName        String   @db.VarChar(100)
+  role            Role     @default(operator)
+  email           String   @unique @db.VarChar(255)
+  password        String
+  supervisedYards Yard[]
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([email])
+  @@index([role])
+  @@map("users")
+}
+
+enum Role {
+  admin
+  supervisor
+  operator
+}
