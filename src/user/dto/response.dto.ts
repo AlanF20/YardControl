@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Role } from '@prisma/client';
 
 export class UserResponseDto {
@@ -17,12 +17,12 @@ export class UserResponseDto {
   @ApiProperty({ example: 'user@example.com' })
   email: string;
 
-  @ApiProperty({ type: [Number], example: [1, 5] })
-  supervisedYardIds: number[];
+  @ApiPropertyOptional({ type: [Number], example: [1, 5] })
+  supervisedYardIds?: number[];
 
-  @ApiProperty({ type: Date })
-  createdAt: Date;
+  @ApiPropertyOptional({ type: Date })
+  createdAt?: Date;
 
-  @ApiProperty({ type: Date })
-  updatedAt: Date;
+  @ApiPropertyOptional({ type: Date })
+  updatedAt?: Date;
 }
