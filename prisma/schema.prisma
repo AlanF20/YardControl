@@ -48,15 +48,16 @@ enum AuditEventType {
 
 // Main models
 model Yard {
-  id           Int      @id @default(autoincrement())
-  name         String   @db.VarChar(100)
-  location     String   @db.VarChar(200)
+  id           Int           @id @default(autoincrement())
+  name         String        @db.VarChar(100)
+  location     String        @db.VarChar(200)
   maxCapacity  Int
   status       Status
-  supervisor   User     @relation(fields: [supervisorId], references: [id])
+  supervisor   User          @relation(fields: [supervisorId], references: [id])
   supervisorId Int
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  createdAt    DateTime      @default(now())
+  movements    MovementLog[] // Relationship with logs
+  updatedAt    DateTime      @updatedAt
 
   @@index([location])
   @@index([status])
@@ -73,24 +74,62 @@ model Driver {
   createdAt        DateTime  @default(now())
   updatedAt        DateTime  @updatedAt
 
+  movements MovementLog[] // Relationship with logs
+
   @@index([licenseNumber])
   @@map("drivers")
 }
 
 model User {
-  id              Int      @id @default(autoincrement())
-  firstName       String   @db.VarChar(100)
-  lastName        String   @db.VarChar(100)
-  role            Role     @default(operator)
-  email           String   @unique @db.VarChar(255)
-  password        String
-  supervisedYards Yard[]
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  id                Int           @id @default(autoincrement())
+  firstName         String        @db.VarChar(100)
+  lastName          String        @db.VarChar(100)
+  role              Role          @default(operator)
+  email             String        @unique @db.VarChar(255)
+  password          String
+  supervisedYards   Yard[]
+  movementsCaptured MovementLog[] @relation("CapturedMovements")
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
 
   @@index([email])
   @@index([role])
   @@map("users")
+}
+
+model MovementLog {
+  id           Int          @id @default(autoincrement())
+  type         MovementType
+  reason       EntryReason
+  yard         Yard         @relation(fields: [yardId], references: [id])
+  yardId       Int
+  driver       Driver?      @relation(fields: [driverId], references: [id])
+  driverId     Int?
+  vehicle      Vehicle?     @relation(fields: [vehicleId], references: [id])
+  vehicleId    Int?
+  capturedBy   User         @relation(fields: [capturedById], references: [id], name: "CapturedMovements")
+  capturedById Int
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  @@index([yardId, type])
+  @@index([capturedById])
+  @@map("movement_logs")
+}
+
+model Vehicle {
+  id            Int           @id @default(autoincrement())
+  plate         String        @unique @db.VarChar(20) // License plate (unique)
+  serialNumber  String        @db.VarChar(50) // Vehicle serial number
+  keysDelivered Boolean       @default(false) // Keys handed over
+  vin           String?       @unique @db.VarChar(17) // Optional VIN (unique if provided)
+  type          VehicleType // From enum
+  movements     MovementLog[] // Relationship with logs
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@index([plate, vin]) // Optimized search
+  @@map("vehicles")
 }
 
 enum Role {
