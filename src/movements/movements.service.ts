@@ -12,12 +12,49 @@ export class MovementsService {
 
   private includeRelations = {
     yard: {
-      include: {
-        supervisor: true,
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+        name: true,
+        location: true,
+        maxCapacity: true,
+        status: true,
+        supervisorId: true,
+        supervisor: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            email: true,
+            role: true,
+          },
+        },
       },
     },
-    driver: true,
-    vehicle: true,
+    driver: {
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+        name: true,
+        licenseNumber: true,
+        phone: true,
+        transportCompany: true,
+        licenseExpiry: true,
+      },
+    },
+    vehicle: {
+      select: {
+        id: true,
+        name: true,
+        plate: true,
+        serialNumber: true,
+        keysDelivered: true,
+        vin: true,
+        type: true,
+      },
+    },
     capturedBy: {
       select: {
         id: true,
@@ -195,8 +232,9 @@ export class MovementsService {
         plate: movement.vehicle.plate,
         serialNumber: movement.vehicle.serialNumber,
         keysDelivered: movement.vehicle.keysDelivered,
-        vin: movement.vehicle.vin || 'No registrado',
+        vin: movement.vehicle.vin ?? undefined,
         type: movement.vehicle.type,
+        name: movement.vehicle.name
       },
       capturedBy: {
         id: movement.capturedBy.id,

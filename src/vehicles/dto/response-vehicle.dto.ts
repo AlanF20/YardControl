@@ -6,6 +6,8 @@ export class VehicleResponseDto {
   id: number;
 
   @ApiProperty()
+  name: string;
+  @ApiProperty()
   plate: string;
 
   @ApiProperty()

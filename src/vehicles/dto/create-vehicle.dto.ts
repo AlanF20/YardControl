@@ -9,6 +9,11 @@ import {
 import { VehicleType } from '@prisma/client';
 
 export class CreateVehicleDto {
+  @ApiProperty({ example: 'Camión Grande', description: 'Nombre del vehículo' })
+  @IsString()
+  @Length(1, 100)
+  name: string;
+
   @ApiProperty({ example: 'ABC-123', description: 'License plate' })
   @IsString()
   @Length(5, 20)

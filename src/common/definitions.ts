@@ -17,7 +17,7 @@ export type MovementWithRelations = MovementLog & {
   >;
   vehicle: Pick<
     Vehicle,
-    'id' | 'plate' | 'serialNumber' | 'keysDelivered' | 'vin' | 'type'
+    'id' | 'name' | 'plate' | 'serialNumber' | 'keysDelivered' | 'vin' | 'type'
   >;
   capturedBy: Pick<User, 'id' | 'firstName' | 'lastName' | 'email' | 'role'>;
 };

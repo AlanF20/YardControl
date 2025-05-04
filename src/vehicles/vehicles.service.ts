@@ -7,6 +7,7 @@ import { CreateVehicleDto } from './dto/create-vehicle.dto';
 import { UpdateVehicleDto } from './dto/update-vehicle.dto';
 import { PrismaService } from 'src/db/prisma.service';
 import { VehicleResponseDto } from './dto/response-vehicle.dto';
+import { Vehicle } from '@prisma/client';
 
 @Injectable()
 export class VehiclesService {
@@ -80,16 +81,17 @@ export class VehiclesService {
     }
   }
 
-  private toResponseDto(vehicle): VehicleResponseDto {
+  private toResponseDto(vehicle: Vehicle): VehicleResponseDto {
     return {
       id: vehicle.id,
       plate: vehicle.plate,
       serialNumber: vehicle.serialNumber,
       keysDelivered: vehicle.keysDelivered,
-      vin: vehicle.vin,
+      vin: vehicle.vin ?? undefined,
       type: vehicle.type,
       createdAt: vehicle.createdAt,
       updatedAt: vehicle.updatedAt,
+      name: vehicle.name,
     };
   }
 }
